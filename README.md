@@ -1,6 +1,9 @@
 # NeoController - NeoPixel Controller and Tester based on ATtiny13A
 An ATtiny13 is more than sufficient to control almost any number of NeoPixels via an IR remote. The NeoController was originally developed as a tester for 800kHz NeoPixel strips. Since there was still so much flash left in the ATtiny13, an IR receiver was integrated so that some parameters can be controlled with an IR remote control. In this way, it is also suitable as a simple and cheap remote-controlled control unit for NeoPixels. Due to its small size (21.6mm x 11.4mm), it can be soldered directly to the LED strip without any problems. The power supply via a USB-C connection enables currents of up to 3A. There is still more than a third of the flash memory left for additional ideas.
 
+- Project Video (YouTube): https://youtu.be/HLtST_1GFfo
+- Design Files (EasyEDA): https://easyeda.com/wagiminator/attiny13-tinyneotester
+
 ![NeoController_pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic1.jpg)
 
 # Software
