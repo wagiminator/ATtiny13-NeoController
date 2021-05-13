@@ -1,13 +1,13 @@
 # NeoController - NeoPixel Controller and Tester based on ATtiny13A
 An ATtiny13 is more than sufficient to control almost any number of NeoPixels via an IR remote. The NeoController was originally developed as a tester for 800kHz NeoPixel strips. Since there was still so much flash left in the ATtiny13, an IR receiver was integrated so that some parameters can be controlled with an IR remote control. In this way, it is also suitable as a simple and cheap remote-controlled control unit for NeoPixels. Due to its small size (21.6mm x 11.4mm), it can be soldered directly to the LED strip without any problems. The power supply via a USB-C connection enables currents of up to 3A. There is still more than a third of the flash memory left for additional ideas.
 
-![NeoController_pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_pic1.jpg)
+![NeoController_pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic1.jpg)
 
 # Software
 ## NeoPixel Implementation
 The control of NeoPixels with 8-bit microcontrollers is usually done with software bit-banging. However, this is particularly difficult at low clock rates due to the relatively high data rate of the protocol and the strict timing requirements. The essential protocol parameters for controlling the WS2812 NeoPixels (or similar 800kHz addressable LEDs) can be found in the [datasheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf).
 
-![NeoController_timings.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_timings.png)
+![NeoController_timings.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_timings.png)
 
 Fortunately, the timing is nowhere near as strict as the data sheet suggests. The following timing rules can be derived from the excellent articles by [Josh Levine](https://wp.josh.com/2014/05/13/ws2812-neopixels-are-not-so-finicky-once-you-get-to-know-them/) and [Tim](https://cpldcpu.wordpress.com/2014/01/14/light_ws2812-library-v2-0-part-i-understanding-the-ws2812/) and should **work with all 800kHz addressable LEDs**:
 
@@ -42,7 +42,7 @@ void NEO_sendByte(uint8_t byte) {               // CLK  comment
 
 When compiled, the function for bit-banging a data byte requires only **20 bytes of flash**. Here is the resulting signal captured with a logic analyzer:
 
-![NeoController_logic_NEO.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_logicNEO.png)
+![NeoController_logic_NEO.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logicNEO.png)
 
 The resulting timing values are shown in the following table:
 
@@ -76,7 +76,7 @@ The Extended NEC protocol uses 16-bit addresses. Instead of sending an 8-bit add
 
 Here is an example signal captured with a logic analyzer:
 
-![NeoController_logic_NEC.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_logicNEC.png)
+![NeoController_logic_NEC.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logicNEC.png)
 
 For a more detailed explanation on the NEC protocol refer to [TinyRemote](https://github.com/wagiminator/ATtiny13-TinyRemote). Don't forget to define the used IR codes in the sketch!
 
@@ -141,7 +141,7 @@ The following instructions refer to the "basic" firmware.
 - The NeoController should immediately start to show a rainbow animation.
 - Use your IR remote control to change animation pattern or to switch on/off the NeoPixels.
 
-![NeoController_pic2.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_pic2.jpg)
+![NeoController_pic2.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic2.jpg)
 
 # References, Links and Notes
 1. [ATtiny13A datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/doc8126.pdf)
@@ -152,8 +152,8 @@ The following instructions refer to the "basic" firmware.
 6. [AdaFruit NeoPixel Überguide](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-neopixel-uberguide.pdf)
 7. [IR Receiver Implementation](https://github.com/wagiminator/ATtiny13-TinyDecoder)
 
-![NeoController_pic3.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_pic3.jpg)
-![NeoController_pic4.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-TinyNeoController/main/documentation/NeoController_pic4.jpg)
+![NeoController_pic3.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic3.jpg)
+![NeoController_pic4.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic4.jpg)
 
 # License
 ![license.png](https://i.creativecommons.org/l/by-sa/3.0/88x31.png)
