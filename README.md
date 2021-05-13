@@ -42,7 +42,7 @@ void NEO_sendByte(uint8_t byte) {               // CLK  comment
 
 When compiled, the function for bit-banging a data byte requires only **20 bytes of flash**. Here is the resulting signal captured with a logic analyzer:
 
-![NeoController_logic_NEO.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logicNEO.png)
+![NeoController_logic_NEO.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logic_NEO.png)
 
 The resulting timing values are shown in the following table:
 
@@ -76,7 +76,7 @@ The Extended NEC protocol uses 16-bit addresses. Instead of sending an 8-bit add
 
 Here is an example signal captured with a logic analyzer:
 
-![NeoController_logic_NEC.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logicNEC.png)
+![NeoController_logic_NEC.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_logic_NEC.png)
 
 For a more detailed explanation on the NEC protocol refer to [TinyRemote](https://github.com/wagiminator/ATtiny13-TinyRemote). Don't forget to define the used IR codes in the sketch!
 
