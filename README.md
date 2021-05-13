@@ -97,6 +97,7 @@ For a more detailed explanation on the NEC protocol refer to [TinyRemote](https:
 There are some firmware examples in the "software" folder:
 
 |Firmware|Description|
+|:-|:-|
 |basic|A simple rainbow animation that can be controlled with the IR remote control in terms of brightness, animation speed and color density.|
 |gamma|A similar rainbow animation but with gamma correction.|
 |tiny10|A similar implementation for the ATtiny10.|
