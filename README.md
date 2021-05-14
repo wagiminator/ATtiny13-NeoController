@@ -6,6 +6,11 @@ An ATtiny13 is more than sufficient to control almost any number of NeoPixels vi
 
 ![NeoController_pic1.jpg](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_pic1.jpg)
 
+# Hardware
+The wiring is pretty simple. For a breadboard test you can use the following simplified schematic:
+
+![NeoController_wiring.png](https://raw.githubusercontent.com/wagiminator/ATtiny13-NeoController/main/documentation/NeoController_wiring.png)
+
 # Software
 ## NeoPixel Implementation
 The control of NeoPixels with 8-bit microcontrollers is usually done with software bit-banging. However, this is particularly difficult at low clock rates due to the relatively high data rate of the protocol and the strict timing requirements. The essential protocol parameters for controlling the WS2812 NeoPixels (or similar 800kHz addressable LEDs) can be found in the [datasheet](https://cdn-shop.adafruit.com/datasheets/WS2812.pdf).
