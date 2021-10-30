@@ -1,56 +1,74 @@
-// TinyNeoController for ATtiny13A - with Gamma Correction
+// ===================================================================================
+// Project:   TinyNeoController - NeoPixel Controller (with Gamma Correction)
+// Version:   v1.0
+// Year:      2021
+// Author:    Stefan Wagner
+// Github:    https://github.com/wagiminator
+// EasyEDA:   https://easyeda.com/wagiminator
+// License:   http://creativecommons.org/licenses/by-sa/3.0/
+// ===================================================================================
 //
-// An ATtiny13 is more than sufficient to control almost any number
-// of NeoPixels via an IR remote. The NeoController was originally
-// developed as a tester for 800kHz NeoPixel strings. Since there was
-// still so much flash left in the ATtiny13, an IR receiver was
-// integrated so that some parameters can be controlled with an IR
-// remote control. In this way, it is also suitable as a simple and
-// cheap remote-controlled control unit for NeoPixels. Due to its
-// small size, it can be soldered directly to the LED strip without
-// any problems. The power supply via a USB-C connection enables
-// currents of up to 3A. There is still more than a third of the
-// flash memory left for additional ideas.
+// Description:
+// ------------
+// An ATtiny13 is more than sufficient to control almost any number of NeoPixels
+// via an IR remote. The NeoController was originally developed as a tester for
+// 800kHz NeoPixel strings. Since there was still so much flash left in the
+// ATtiny13, an IR receiver was integrated so that some parameters can be
+// controlled with an IR remote control. In this way, it is also suitable as a
+// simple and cheap remote-controlled control unit for NeoPixels. Due to its
+// small size, it can be soldered directly to the LED strip without any problems.
+// The power supply via a USB-C connection enables currents of up to 3A. There is
+// still more than a third of the flash memory left for additional ideas.
 //
-//                               +-\/-+
-//             --- A0 (D5) PB5  1|°   |8  Vcc
-// NEOPIXELS ----- A3 (D3) PB3  2|    |7  PB2 (D2) A1 ---
-// IR RECEIVER --- A2 (D4) PB4  3|    |6  PB1 (D1) ------
-//                         GND  4|    |5  PB0 (D0) ------
-//                               +----+
-//
-// Controller:  ATtiny13A
-// Core:        MicroCore (https://github.com/MCUdude/MicroCore)
-// Clockspeed:  9.6 MHz internal
-// BOD:         BOD disabled
-// Timing:      Micros disabled
-// Leave the rest on default settings. Don't forget to "Burn bootloader"!
-// No Arduino core functions or libraries are used. Use the makefile if 
-// you want to compile without Arduino IDE.
-//
+// References:
+// -----------
 // The Neopixel implementation is based on NeoCandle.
 // https://github.com/wagiminator/ATtiny85-TinyCandle
 //
 // Gamma correction table is adapted from Adafruit: LED Tricks
 // https://learn.adafruit.com/led-tricks-gamma-correction
 //
-// 2021 by Stefan Wagner 
-// Project Files (EasyEDA): https://easyeda.com/wagiminator
-// Project Files (Github):  https://github.com/wagiminator
-// License: http://creativecommons.org/licenses/by-sa/3.0/
+// The IR receiver implementation (NEC protocol) is based on TinyDecoder
+// https://github.com/wagiminator/ATtiny13-TinyDecoder
+//
+// Wiring:
+// -------
+//                                +-\/-+
+//             --- RST ADC0 PB5  1|°   |8  Vcc
+//   NEOPIXELS ------- ADC3 PB3  2|    |7  PB2 ADC1 -------- 
+// IR RECEIVER ------- ADC2 PB4  3|    |6  PB1 AIN1 OC0B --- 
+//                          GND  4|    |5  PB0 AIN0 OC0A --- 
+//                                +----+
+//
+// Compilation Settings:
+// ---------------------
+// Controller:  ATtiny13A
+// Core:        MicroCore (https://github.com/MCUdude/MicroCore)
+// Clockspeed:  9.6 MHz internal
+// BOD:         BOD disabled
+// Timing:      Micros disabled
+//
+// Leave the rest on default settings. Don't forget to "Burn bootloader"!
+// No Arduino core functions or libraries are used. Use the makefile if 
+// you want to compile without Arduino IDE.
+//
+// Fuse settings: -U lfuse:w:0x3a:m -U hfuse:w:0xff:m
 
+
+// ===================================================================================
+// Libraries and Definitions
+// ===================================================================================
 
 // Libraries
-#include <avr/io.h>
-#include <avr/sleep.h>
-#include <avr/power.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include <avr/io.h>           // for GPIO
+#include <avr/sleep.h>        // for sleep functions
+#include <avr/pgmspace.h>     // to store data in programm memory
+#include <avr/interrupt.h>    // for interrupts
+#include <util/delay.h>       // for delays
 
 // Pins
-#define NEO_PIN       3       // Pin for neopixels
-#define IR_PIN        4       // Pin for IR receiver
+#define NEO_PIN       PB3     // Pin for neopixels
+#define IR_PIN        PB4     // Pin for IR receiver
 
 // NeoPixel parameter
 #define NEO_GRB               // type of pixel: NEO_GRB, NEO_RGB or NEO_RGBW
@@ -63,10 +81,11 @@
 #define IR_DENSE      0x04    // IR code for color density
 #define IR_FAIL       0xFF    // IR fail code
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // Neopixel Implementation for 9.6 MHz MCU Clock and 800 kHz Pixels
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
+// NeoPixel parameter and macros
 #define NEO_init()    DDRB |= (1<<NEO_PIN)      // set pixel DATA pin as output
 #define NEO_latch()   _delay_us(281)            // delay to show shifted colors
 
@@ -117,7 +136,7 @@ void NEO_writeHue(uint8_t hue) {
   uint8_t phase = hue >> 6;
   uint8_t step  = pgm_read_byte(&gamma[hue & 63]);
   uint8_t nstep = pgm_read_byte(&gamma[63 - (hue & 63)]);
-  switch (phase) {
+  switch(phase) {
     case 0:   NEO_writeColor(nstep,  step,     0); break;
     case 1:   NEO_writeColor(    0, nstep,  step); break;
     case 2:   NEO_writeColor( step,     0, nstep); break;
@@ -125,9 +144,9 @@ void NEO_writeHue(uint8_t hue) {
   }
 }
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // IR Receiver Implementation (NEC Protocol)
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
 // IR receiver definitions and macros
 #define IR_init()       PORTB |= (1<<IR_PIN)  // pullup on IR pin
@@ -137,8 +156,8 @@ void NEO_writeHue(uint8_t hue) {
 uint8_t IR_waitChange(uint8_t timeout) {
   uint8_t pinState = PINB & (1<<IR_PIN);      // get current signal state
   uint8_t dur = 0;                            // variable for measuring duration
-  while ((PINB & (1<<IR_PIN)) == pinState) {  // measure length of signal
-    if (dur++ > timeout) return 0;            // exit if timeout
+  while((PINB & (1<<IR_PIN)) == pinState) {   // measure length of signal
+    if(dur++ > timeout) return 0;             // exit if timeout
     _delay_us(100);                           // count every 100us
   }
   return dur;                                 // return time in 100us
@@ -150,10 +169,10 @@ uint8_t IR_readByte(void) {
   uint8_t dur;
   for (uint8_t i=8; i; i--) {                 // 8 bits
     result >>= 1;                             // LSB first
-    if (IR_waitChange(11) < 3) return IR_FAIL;// exit if wrong burst length
+    if(IR_waitChange(11) < 3) return IR_FAIL; // exit if wrong burst length
     dur = IR_waitChange(21);                  // measure length of pause
-    if (dur <  3) return IR_FAIL;             // exit if wrong pause length
-    if (dur > 11) result |= 0x80;             // bit "0" or "1" depends on pause duration
+    if(dur <  3) return IR_FAIL;              // exit if wrong pause length
+    if(dur > 11) result |= 0x80;              // bit "0" or "1" depends on pause duration
   }
   return result;                              // return received byte
 }
@@ -161,26 +180,26 @@ uint8_t IR_readByte(void) {
 // IR read data according to NEC protocol
 uint8_t IR_read(void) {
   uint16_t addr;                              // variable for received address
-  if (!IR_available())        return IR_FAIL; // exit if no signal
-  if (!IR_waitChange(100))    return IR_FAIL; // exit if wrong start burst length
-  if (IR_waitChange(55) < 35) return IR_FAIL; // exit if wrong start pause length
+  if(!IR_available())        return IR_FAIL;  // exit if no signal
+  if(!IR_waitChange(100))    return IR_FAIL;  // exit if wrong start burst length
+  if(IR_waitChange(55) < 35) return IR_FAIL;  // exit if wrong start pause length
 
   uint8_t addr1 = IR_readByte();              // get first  address byte
   uint8_t addr2 = IR_readByte();              // get second address byte
   uint8_t cmd1  = IR_readByte();              // get first  command byte
   uint8_t cmd2  = IR_readByte();              // get second command byte
 
-  if (IR_waitChange(11) < 3)  return IR_FAIL; // exit if wrong final burst length
-  if ((cmd1 + cmd2) < 255)    return IR_FAIL; // exit if command bytes are not inverse
-  if ((addr1 + addr2) == 255) addr = addr1;   // check if it's extended NEC-protocol ...
+  if(IR_waitChange(11) < 3)  return IR_FAIL;  // exit if wrong final burst length
+  if((cmd1 + cmd2) < 255)    return IR_FAIL;  // exit if command bytes are not inverse
+  if((addr1 + addr2) == 255) addr = addr1;    // check if it's extended NEC-protocol ...
   else addr = ((uint16_t)addr2 << 8) | addr1; // ... and get the correct address
-  if (addr != IR_ADDR)        return IR_FAIL; // wrong address
+  if(addr != IR_ADDR)        return IR_FAIL;  // wrong address
   return cmd1;                                // return command code
 }
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // Standby Implementation
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
 // Go to standby mode
 void standby(void) {
@@ -195,11 +214,11 @@ void standby(void) {
 }
 
 // Pin change interrupt service routine
-EMPTY_INTERRUPT (PCINT0_vect);                // just wake up from sleep
+EMPTY_INTERRUPT(PCINT0_vect);                 // just wake up from sleep
 
-// -----------------------------------------------------------------------------
+// ===================================================================================
 // Main Function
-// -----------------------------------------------------------------------------
+// ===================================================================================
 
 int main(void) {
   // Local variables
@@ -234,7 +253,7 @@ int main(void) {
     for(uint8_t i=80; i; i--) {
       if(IR_available()) {
         uint8_t command = IR_read();
-        switch (command) {
+        switch(command) {
           case IR_POWER:    standby(); break;
           case IR_SPEED:    speed <<= 1; if(++speed > 7) speed = 0; break;
           case IR_DENSE:    dense += 2; if(dense > 7) dense = 0; break;
